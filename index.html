@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ProjetoHub | Gestão Acadêmica</title>
+<style>
+:root{--bg:#08111f;--panel:#111e30;--blue:#2878ee;--text:#eaf2ff;--muted:#9db0c9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px Arial,sans-serif}
+header{padding:24px 6%;background:#101d30;border-bottom:1px solid #263852}
+header h1{margin:0;color:#72aaff}
+header p{color:var(--muted)}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:85vh}
+nav{padding:20px;border-right:1px solid #263852}
+nav button{display:block;width:100%;text-align:left;margin:5px 0}
+button{cursor:pointer;border:1px solid #304560;border-radius:8px;padding:12px;background:#172942;color:var(--text)}
+button:hover,button.active{background:#2058a2}
+main{padding:28px;max-width:1100px;width:100%}
+.card{background:var(--panel);border:1px solid #263852;border-radius:14px;padding:20px;margin:14px 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.big{font-size:28px;font-weight:bold;color:#72aaff}
+label{display:block;margin:16px 0 7px;color:#b9cce5}
+input,textarea,select{width:100%;padding:12px;border:1px solid #304560;border-radius:8px;background:#091526;color:white}
+textarea{min-height:150px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.phase{display:flex;gap:12px;align-items:center}
+.phase input{width:auto}
+small,.muted{color:var(--muted)}
+a{color:#8bbaff}
+@media(max-width:700px){.layout{grid-template-columns:1fr}nav{border-right:0;border-bottom:1px solid #263852;display:grid;grid-template-columns:1fr 1fr;gap:5px}main{padding:16px}.stats{grid-template-columns:1fr}}
+@media print{nav,.actions,header p,.no-print{display:none!important}body{background:white;color:#111}.layout{display:block}main{max-width:none;padding:0}.card{background:white;color:#111;border:1px solid #ccc;break-inside:avoid}input,textarea{color:#111;background:white;border:0;padding:3px}header{background:white;color:#111;border-bottom:2px solid #333}header h1{color:#111}.muted,small,label{color:#333}}
+</style>
+</head>
+<body>
+<header>
+  <h1>▦ ProjetoHub</h1>
+  <p>Gestão de projetos, documentação técnica e infraestrutura Linux</p>
+  <strong>Wesley · Grau Técnico · INF10 · INF240161</strong>
+</header>
+<div class="layout">
+<nav id="nav">
+<button class="active" data-page="inicio">▦ Visão geral</button>
+<button data-page="f1">01 · Planejamento</button>
+<button data-page="f2">02 · Desenvolvimento</button>
+<button data-page="f3">03 · Implantação</button>
+<button data-page="f4">04 · Infraestrutura</button>
+<button data-page="f5">05 · Entrega</button>
+<button data-page="docs">Documentação V1–V4</button>
+</nav>
+<main id="app"></main>
+</div>
+<script>
+const fases=[
+{ id:"f1",nome:"Fase 1 — Planejamento",versao:"V1",itens:[
+"Levantar requisitos funcionais e não funcionais",
+"Organizar backlog Scrum e sprints",
+"Criar protótipo das telas",
+"Elaborar diagramas UML",
+"Concluir documentação técnica V1"],
+modelo:"Objetivo: desenvolver um portal acadêmico para registrar as etapas de um projeto web. Requisitos funcionais: visualizar fases, editar documentação, salvar conteúdo e imprimir relatórios. Requisitos não funcionais: interface responsiva, usabilidade, organização e segurança. Scrum: backlog dividido em cinco fases, com revisão ao final de cada sprint. Modelagem: usuários, projetos, fases e documentos."},
+{ id:"f2",nome:"Fase 2 — Desenvolvimento",versao:"V2",itens:[
+"Criar repositório Git e README",
+"Implementar o código-fonte",
+"Aplicar conceitos de POO",
+"Registrar framework e dependências",
+"Executar e documentar testes iniciais"],
+modelo:"Tecnologias propostas: HTML, CSS e JavaScript no frontend; Python e Flask no backend; SQLite para persistência. Git será utilizado para versionamento. Testes iniciais: validar navegação, formulários, persistência, rotas e tratamento de erros. Registrar resultados reais após executar os testes. Atualizar os requisitos e diagramas da V1."},
+{ id:"f3",nome:"Fase 3 — Implantação",versao:"V3",itens:[
+"Modelar o banco de dados",
+"Definir configuração de produção",
+"Publicar o sistema online",
+"Verificar acesso e persistência",
+"Registrar evidências da publicação"],
+modelo:"Modelo de dados: Projeto possui várias Fases; cada Fase pode ter vários Documentos. Entidades sugeridas: Projeto(id, nome, aluno), Fase(id, projeto_id, nome, status), Documento(id, fase_id, versao, conteudo, atualizado_em). Definir chaves estrangeiras e backups. Registrar provedor, URL real, data, configuração e evidências após a publicação."},
+{ id:"f4",nome:"Fase 4 — Infraestrutura",versao:"V4",itens:[
+"Criar máquina virtual no VirtualBox",
+"Instalar distribuição Linux",
+"Configurar rede, usuários e permissões",
+"Instalar dependências e serviço systemd",
+"Configurar firewall, logs e backup",
+"Documentar deploy Git e recuperação"],
+modelo:"Ambiente proposto: Ubuntu Server LTS em VM, 2 vCPU, 2–4 GB de RAM e disco de 20 GB. Aplicação Flask com Gunicorn e Nginx como proxy reverso. Criar usuário de serviço sem privilégios administrativos. Restringir SSH, permitir somente portas necessárias e manter segredos fora do Git. Configurar logs, cópia de segurança, restauração testada e procedimento de recuperação. Failover exige uma segunda instância ou infraestrutura redundante; não presumir que existe antes de implementá-la."},
+{ id:"f5",nome:"Fase 5 — Entrega",versao:"Final",itens:[
+"Validar as funcionalidades finais",
+"Executar teste controlado de indisponibilidade",
+"Registrar recuperação e evidências",
+"Finalizar documentação da infraestrutura",
+"Preparar slides e apresentação"],
+modelo:"Apresentação: problema e objetivo, requisitos, protótipos, tecnologias, demonstração do sistema, modelo do banco de dados, publicação, VM Linux, segurança, backups, resultados dos testes e melhorias futuras. Teste de indisponibilidade: registrar estado inicial, interromper controladamente o serviço de teste, verificar a falha, reiniciar o serviço, validar a recuperação e anexar logs. Não executar interrupções em sistemas de terceiros."}
+];
+const defaults={aluno:"Wesley",instituicao:"Grau Técnico",turma:"INF10",matricula:"INF240161",projeto:"ProjetoHub"};
+let dados={};
+try{dados=JSON.parse(localStorage.getItem("projethub")||"{}")}catch(e){dados={}}
+const get=(k,d="")=>dados[k]??d;
+function save(k,v){dados[k]=v;localStorage.setItem("projethub",JSON.stringify(dados))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function field(k,label,value,area=false){
+return `<label>${label}</label>${area?`<textarea data-save="${k}">${esc(value)}</textarea>`:`<input data-save="${k}" value="${esc(value)}">`}`
+}
+function inicio(){let total=0;fases.forEach(f=>f.itens.forEach((_,i)=>{if(get(f.id+"_"+i,false))total++}));let max=fases.reduce((n,f)=>n+f.itens.length,0);
+return `<h2>Visão geral</h2><p class="muted">Seu espaço de planejamento, desenvolvimento e entrega.</p>
+<div class="stats"><div class="card"><small>Fases</small><div class="big">05</div></div><div class="card"><small>Tarefas marcadas</small><div class="big">${total}/${max}</div></div><div class="card"><small>Conclusão</small><div class="big">${Math.round(total/max*100)}%</div></div></div>
+<div class="card"><h3>Identificação acadêmica</h3>${field("aluno","Aluno",get("aluno",defaults.aluno))}${field("instituicao","Instituição",get("instituicao",defaults.instituicao))}${field("turma","Turma",get("turma",defaults.turma))}${field("matricula","Matrícula",get("matricula",defaults.matricula))}${field("projeto","Projeto",get("projeto",defaults.projeto))}</div>
+<div class="card"><h3>Plano de trabalho</h3>${fases.map(f=>`<p><strong>${f.versao} · ${f.nome}</strong><br><small>${f.itens.length} tarefas no checklist</small></p>`).join("")}</div>`}
+function fase(f){return `<h2>${f.nome}</h2><p class="muted">Registre as atividades e atualize a documentação técnica ${f.versao}.</p><div class="card"><h3>Checklist de execução</h3>${f.itens.map((t,i)=>`<label class="phase"><input type="checkbox" data-check="${f.id}_${i}" ${get(f.id+"_"+i,false)?"checked":""}>${t}</label>`).join("")}</div><div class="card"><h3>Modelo e exemplo preenchido</h3><p>Use o exemplo como referência e adapte-o ao que foi realmente realizado.</p><textarea data-save="${f.id}_doc">${esc(get(f.id+"_doc",f.modelo))}</textarea></div>`}
+function docs(){return `<h2>Documentação técnica</h2><p>Preencha os documentos e use Imprimir / Salvar PDF. Cada fase tem seu próprio conteúdo salvo neste navegador.</p>${fases.map(f=>`<div class="card"><h3>${f.versao} — ${f.nome}</h3><p>${esc(get(f.id+"_doc",f.modelo))}</p><button data-go="${f.id}">Editar documento</button></div>`).join("")}`}
+function render(page="inicio"){
+document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+let f=fases.find(x=>x.id===page);
+document.getElementById("app").innerHTML=(page==="inicio"?inicio():f?fase(f):docs())+
+`<div class="actions no-print"><button onclick="window.print()">Imprimir / Salvar PDF</button><button id="export">Exportar backup JSON</button><button id="backup">Importar backup JSON</button></div><p class="muted no-print">Os dados são salvos neste navegador. Exporte um backup regularmente.</p>`;
+document.querySelectorAll("[data-save]").forEach(el=>el.addEventListener("input",()=>save(el.dataset.save,el.value)));
+document.querySelectorAll("[data-check]").forEach(el=>el.addEventListener("change",()=>{save(el.dataset.check,el.checked);render(page)}));
+document.querySelectorAll("[data-go]").forEach(el=>el.addEventListener("click",()=>render(el.dataset.go)));
+document.getElementById("export").onclick=()=>{let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(dados,null,2)],{type:"application/json"}));a.download="projethub-backup.json";a.click();URL.revokeObjectURL(a.href)};
+document.getElementById("backup").onclick=()=>{let input=document.createElement("input");input.type="file";input.accept=".json,application/json";input.onchange=async()=>{try{dados=JSON.parse(await input.files[0].text());localStorage.setItem("projethub",JSON.stringify(dados));render(page);alert("Backup importado.")}catch(e){alert("Arquivo JSON inválido.")}};input.click()};
+}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>render(b.dataset.page)));
+render();
+</script>
+</body>
+</html>
+
