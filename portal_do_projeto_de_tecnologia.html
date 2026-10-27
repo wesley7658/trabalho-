@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Projeto Integrador | POO & Infraestrutura Linux</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0B0F17',
+                            card: '#111827',
+                            border: '#1F2937',
+                            accent: '#10B981', // Neon Green
+                            cyan: '#06B6D4',   // Neon Cyan
+                            blue: '#3B82F6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0B0F17;
+            color: #F3F4F6;
+        }
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F2937;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10B981;
+        }
+        .glow-effect {
+            box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.2);
+        }
+        .glow-effect:hover {
+            box-shadow: 0 0 25px 0px rgba(16, 185, 129, 0.4);
+        }
+        .tab-btn.active {
+            border-color: #10B981;
+            color: #10B981;
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-accent selection:text-black">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 bg-brand-dark/90 backdrop-blur-md border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-accent to-brand-cyan flex items-center justify-center text-black font-extrabold text-xl shadow-lg">
+                        <i class="fa-solid fa-terminal"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg tracking-wide bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent">DevOps & POO</span>
+                        <span class="block text-xs text-brand-accent font-mono">PORTAL DO PROJETO</span>
+                    </div>
+                </div>
+
+                <!-- Nav Links Desktop -->
+                <nav class="hidden md:flex space-x-1 text-sm font-medium">
+                    <a href="#overview" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-brand-border transition">Visão Geral</a>
+                    <a href="#fases" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-brand-border transition">As 5 Fases</a>
+                    <a href="#arquitetura" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-brand-border transition">Modelagem & POO</a>
+                    <a href="#scripts" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-brand-border transition">Linux & Scripts</a>
+                    <a href="#docs" class="px-3 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-brand-border transition">Documentações</a>
+                </nav>
+
+                <!-- Status Badge -->
+                <div class="hidden lg:flex items-center space-x-3 bg-brand-card px-3 py-1.5 rounded-full border border-brand-border text-xs">
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-accent opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-accent"></span>
+                    </span>
+                    <span class="text-gray-300 font-mono" id="global-status-text">Status: 0% Concluído</span>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="p-2 rounded-md text-gray-400 hover:text-white hover:bg-brand-border focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-b border-brand-border bg-brand-card px-4 pt-2 pb-4 space-y-1">
+            <a href="#overview" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-brand-border">Visão Geral</a>
+            <a href="#fases" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-brand-border">As 5 Fases</a>
+            <a href="#arquitetura" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-brand-border">Modelagem & POO</a>
+            <a href="#scripts" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-brand-border">Linux & Scripts</a>
+            <a href="#docs" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-brand-border">Documentações</a>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+
+        <!-- HERO / OVERVIEW SECTION -->
+        <section id="overview" class="relative overflow-hidden rounded-3xl bg-gradient-to-b from-brand-card to-brand-dark border border-brand-border p-8 md:p-12 glow-effect">
+            <div class="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-brand-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 bg-brand-cyan/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-accent/10 border border-brand-accent/30 text-brand-accent text-xs font-semibold">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span>Projeto Integrador de Tecnologia</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                        Desenvolvimento Python POO & Infraestrutura Linux
+                    </h1>
+                    <p class="text-gray-400 text-base sm:text-lg leading-relaxed">
+                        Aplicação robusta baseada em Programação Orientada a Objetos com interface intuitiva, totalmente provisionada em servidor Linux virtualizado com rotinas automatizadas de backup, monitoramento e failover.
+                    </p>
+
+                    <!-- Feature Tags -->
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <span class="px-3 py-1 bg-brand-dark border border-brand-border rounded-lg text-xs font-mono text-gray-300"><i class="fa-brands fa-python text-yellow-400 mr-1.5"></i>Python POO</span>
+                        <span class="px-3 py-1 bg-brand-dark border border-brand-border rounded-lg text-xs font-mono text-gray-300"><i class="fa-brands fa-linux text-white mr-1.5"></i>Linux Systemd</span>
+                        <span class="px-3 py-1 bg-brand-dark border border-brand-border rounded-lg text-xs font-mono text-gray-300"><i class="fa-solid fa-database text-brand-cyan mr-1.5"></i>Banco de Dados</span>
+                        <span class="px-3 py-1 bg-brand-dark border border-brand-border rounded-lg text-xs font-mono text-gray-300"><i class="fa-solid fa-shield-halved text-brand-accent mr-1.5"></i>Firewall & Backup</span>
+                    </div>
+                </div>
+
+                <!-- Progress Widget Header -->
+                <div class="bg-brand-dark/80 backdrop-blur border border-brand-border p-6 rounded-2xl space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-white text-sm">Progresso do Projeto</h3>
+                        <span class="text-xs font-mono text-brand-accent" id="progress-percent-badge">0%</span>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-brand-border rounded-full h-3 overflow-hidden">
+                        <div id="main-progress-bar" class="bg-gradient-to-r from-brand-cyan to-brand-accent h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-xs pt-2">
+                        <div class="p-3 bg-brand-card rounded-xl border border-brand-border">
+                            <span class="text-gray-400 block mb-1">Tarefas Totais</span>
+                            <span class="text-xl font-bold text-white" id="total-tasks-count">25</span>
+                        </div>
+                        <div class="p-3 bg-brand-card rounded-xl border border-brand-border">
+                            <span class="text-gray-400 block mb-1">Concluídas</span>
+                            <span class="text-xl font-bold text-brand-accent" id="completed-tasks-count">0</span>
+                        </div>
+                    </div>
+                    
+                    <button onclick="document.getElementById('fases').scrollIntoView({behavior: 'smooth'})" class="w-full py-2.5 px-4 bg-brand-accent hover:bg-emerald-600 text-black font-semibold rounded-xl text-xs transition flex items-center justify-center space-x-2">
+                        <span>Atualizar Checklist</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CRONOGRAMA / TIMELINE INTERATIVA -->
+        <section class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight">Linha do Tempo das Fases</h2>
+                    <p class="text-gray-400 text-sm mt-1">Evolução sequencial do planejamento à entrega final do sistema</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <!-- Timeline Card 1 -->
+                <div class="bg-brand-card border border-brand-border p-5 rounded-2xl relative flex flex-col justify-between hover:border-brand-accent/50 transition">
+                    <div class="space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-brand-blue/20 text-brand-blue flex items-center justify-center font-bold text-sm">1</div>
+                        <h4 class="font-bold text-white text-sm">Planejamento</h4>
+                        <p class="text-xs text-gray-400">Requisitos, Scrum, Protótipo & Diagramas UML.</p>
+                    </div>
+                    <span class="mt-4 text-[10px] font-mono px-2 py-1 bg-brand-dark rounded text-gray-400 w-fit">Doc V1</span>
+                </div>
+
+                <!-- Timeline Card 2 -->
+                <div class="bg-brand-card border border-brand-border p-5 rounded-2xl relative flex flex-col justify-between hover:border-brand-accent/50 transition">
+                    <div class="space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 text-brand-cyan flex items-center justify-center font-bold text-sm">2</div>
+                        <h4 class="font-bold text-white text-sm">Desenvolvimento</h4>
+                        <p class="text-xs text-gray-400">Código Python (POO), Framework GUI & Testes.</p>
+                    </div>
+                    <span class="mt-4 text-[10px] font-mono px-2 py-1 bg-brand-dark rounded text-gray-400 w-fit">Doc V2</span>
+                </div>
+
+                <!-- Timeline Card 3 -->
+                <div class="bg-brand-card border border-brand-border p-5 rounded-2xl relative flex flex-col justify-between hover:border-brand-accent/50 transition">
+                    <div class="space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">3</div>
+                        <h4 class="font-bold text-white text-sm">Implantação</h4>
+                        <p class="text-xs text-gray-400">Banco de Dados & Publicação Inicial Online.</p>
+                    </div>
+                    <span class="mt-4 text-[10px] font-mono px-2 py-1 bg-brand-dark rounded text-gray-400 w-fit">Doc V3</span>
+                </div>
+
+                <!-- Timeline Card 4 -->
+                <div class="bg-brand-card border border-brand-border p-5 rounded-2xl relative flex flex-col justify-between hover:border-brand-accent/50 transition">
+                    <div class="space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-sm">4</div>
+                        <h4 class="font-bold text-white text-sm">Infraestrutura</h4>
+                        <p class="text-xs text-gray-400">VM Linux, Systemd, Backup, Firewall & Failover.</p>
+                    </div>
+                    <span class="mt-4 text-[10px] font-mono px-2 py-1 bg-brand-dark rounded text-gray-400 w-fit">Doc V4</span>
+                </div>
+
+                <!-- Timeline Card 5 -->
+                <div class="bg-brand-card border border-brand-border p-5 rounded-2xl relative flex flex-col justify-between hover:border-brand-accent/50 transition">
+                    <div class="space-y-2">
+                        <div class="w-8 h-8 rounded-lg bg-brand-accent/20 text-brand-accent flex items-center justify-center font-bold text-sm">5</div>
+                        <h4 class="font-bold text-white text-sm">Entrega</h4>
+                        <p class="text-xs text-gray-400">Testes de Carga/Queda, Doc Final & Apresentação.</p>
+                    </div>
+                    <span class="mt-4 text-[10px] font-mono px-2 py-1 bg-brand-dark rounded text-gray-400 w-fit">Doc Final</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- DETALHAMENTO DAS 5 FASES (CHECKLIST & CARDS) -->
+        <section id="fases" class="space-y-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight">Detalhamento das 5 Fases do Projeto</h2>
+                    <p class="text-gray-400 text-sm mt-1">Marque as tarefas concluídas para calcular o avanço em tempo real</p>
+                </div>
+            </div>
+
+            <!-- FASES ACCORDION / GRID -->
+            <div class="grid grid-cols-1 gap-6">
+
+                <!-- FASE 1 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+                    <div class="p-6 bg-gradient-to-r from-brand-card to-brand-dark border-b border-brand-border flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-brand-blue/10 border border-brand-blue/30 text-brand-blue flex items-center justify-center font-bold text-xl">
+                                01
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">FASE 1 — Planejamento & Concepção</h3>
+                                <p class="text-xs text-gray-400">Engenharia de requisitos, metodologia ágil e prototipagem</p>
+                            </div>
+                        </div>
+                        <span class="phase-badge text-xs font-mono px-3 py-1 rounded-full bg-brand-dark border border-brand-border text-gray-300" id="badge-fase-1">
+                            0 / 5 Concluídos
+                        </span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="1" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Levantamento de Requisitos</span>
+                                <span class="text-xs text-gray-400">Funcionais e Não-Funcionais da aplicação.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="1" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Definição do Scrum</span>
+                                <span class="text-xs text-gray-400">Sprints, backlog do produto e atribuição de papéis.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="1" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Prototipação de Interface</span>
+                                <span class="text-xs text-gray-400">Wireframes/Mockups UI (Web ou Desktop).</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="1" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Modelagem Inicial</span>
+                                <span class="text-xs text-gray-400">Esboço das classes POO e entidade-relacionamento.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition md:col-span-2 lg:col-span-1">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="1" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Documentação Técnica V1</span>
+                                <span class="text-xs text-gray-400">Compilação no modelo padronizado.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- FASE 2 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+                    <div class="p-6 bg-gradient-to-r from-brand-card to-brand-dark border-b border-brand-border flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan flex items-center justify-center font-bold text-xl">
+                                02
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">FASE 2 — Desenvolvimento & POO</h3>
+                                <p class="text-xs text-gray-400">Programação Python, POO sólida, interface e testes</p>
+                            </div>
+                        </div>
+                        <span class="phase-badge text-xs font-mono px-3 py-1 rounded-full bg-brand-dark border border-brand-border text-gray-300" id="badge-fase-2">
+                            0 / 5 Concluídos
+                        </span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="2" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Repositório Git Configurado</span>
+                                <span class="text-xs text-gray-400">Estrutura de branches e Readme completo.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="2" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Implementação de POO</span>
+                                <span class="text-xs text-gray-400">Classes, herança, encapsulamento e polimorfismo.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="2" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Integração com Framework</span>
+                                <span class="text-xs text-gray-400">Uso de Flask/Django (Web) ou CustomTkinter (Desktop).</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="2" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Testes Unitários & Integração</span>
+                                <span class="text-xs text-gray-400">Suíte de testes com `pytest` ou `unittest`.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition md:col-span-2 lg:col-span-1">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="2" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Documentação Técnica V2</span>
+                                <span class="text-xs text-gray-400">V1 + Relatório e resultados de testes.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- FASE 3 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+                    <div class="p-6 bg-gradient-to-r from-brand-card to-brand-dark border-b border-brand-border flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold text-xl">
+                                03
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">FASE 3 — Implantação & Persistência</h3>
+                                <p class="text-xs text-gray-400">Banco de Dados relacional/não-relacional e deploy web inicial</p>
+                            </div>
+                        </div>
+                        <span class="phase-badge text-xs font-mono px-3 py-1 rounded-full bg-brand-dark border border-brand-border text-gray-300" id="badge-fase-3">
+                            0 / 5 Concluídos
+                        </span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="3" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Modelagem Física do BD</span>
+                                <span class="text-xs text-gray-400">Criação de tabelas, índices e chaves estrangeiras.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="3" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Conexão ORM / Driver</span>
+                                <span class="text-xs text-gray-400">Integração do código Python com o BD (SQLite/PostgreSQL).</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="3" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Publicação Online Inicial</span>
+                                <span class="text-xs text-gray-400">Primeira versão publicada acessível na web.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="3" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Validação de Persistência</span>
+                                <span class="text-xs text-gray-400">Testes de CRUD completo no ambiente ativo.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition md:col-span-2 lg:col-span-1">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="3" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Documentação Técnica V3</span>
+                                <span class="text-xs text-gray-400">V2 + Diagrama ER e detalhes do servidor web.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- FASE 4 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+                    <div class="p-6 bg-gradient-to-r from-brand-card to-brand-dark border-b border-brand-border flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold text-xl">
+                                04
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">FASE 4 — Infraestrutura & Servidor Linux</h3>
+                                <p class="text-xs text-gray-400">Virtualização, gestão de processos, automação, backup e segurança</p>
+                            </div>
+                        </div>
+                        <span class="phase-badge text-xs font-mono px-3 py-1 rounded-full bg-brand-dark border border-brand-border text-gray-300" id="badge-fase-4">
+                            0 / 5 Concluídos
+                        </span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="4" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Servidor Linux & Redes</span>
+                                <span class="text-xs text-gray-400">Criação da VM, usuários, permissões `chmod`/`chown`.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="4" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Serviço Systemd Configurado</span>
+                                <span class="text-xs text-gray-400">Execução daemon automática da aplicação Python.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="4" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Scripts Shell & Backup</span>
+                                <span class="text-xs text-gray-400">Automação de rotinas de backup e logs via `cron`.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="4" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Firewall & Regras de Segurança</span>
+                                <span class="text-xs text-gray-400">Configuração de UFW/Iptables e portas expostas.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition md:col-span-2 lg:col-span-1">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="4" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Documentação Técnica V4</span>
+                                <span class="text-xs text-gray-400">V3 + Detalhes completos da infra, scripts e failover.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- FASE 5 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+                    <div class="p-6 bg-gradient-to-r from-brand-card to-brand-dark border-b border-brand-border flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-brand-accent/10 border border-brand-accent/30 text-brand-accent flex items-center justify-center font-bold text-xl">
+                                05
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">FASE 5 — Entrega & Validação</h3>
+                                <p class="text-xs text-gray-400">Testes de indisponibilidade, entrega final e apresentação</p>
+                            </div>
+                        </div>
+                        <span class="phase-badge text-xs font-mono px-3 py-1 rounded-full bg-brand-dark border border-brand-border text-gray-300" id="badge-fase-5">
+                            0 / 5 Concluídos
+                        </span>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="5" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Teste de Indisponibilidade</span>
+                                <span class="text-xs text-gray-400">Simulação de falhas e resposta de contingência.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="5" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Validação de Logs & Alertas</span>
+                                <span class="text-xs text-gray-400">Verificação do registro de eventos do sistema.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="5" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Documentação Final Consolidada</span>
+                                <span class="text-xs text-gray-400">Manual final de infraestrutura e operação.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="5" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Material de Apresentação</span>
+                                <span class="text-xs text-gray-400">Slides e roteiro para apresentação banca/classe.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 p-3 bg-brand-dark/50 rounded-xl border border-brand-border cursor-pointer hover:border-gray-600 transition md:col-span-2 lg:col-span-1">
+                            <input type="checkbox" class="task-checkbox mt-1 rounded bg-brand-dark border-gray-700 text-brand-accent focus:ring-0" data-fase="5" onchange="updateProgress()">
+                            <div>
+                                <span class="text-sm font-medium text-white block">Pitch & Demonstração Ao Vivo</span>
+                                <span class="text-xs text-gray-400">Apresentação funcional da aplicação e servidor.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- MODELAGEM & ARQUITETURA POO -->
+        <section id="arquitetura" class="space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white tracking-tight">Modelagem de Sistemas & POO</h2>
+                <p class="text-gray-400 text-sm mt-1">Arquitetura de classes em Python e diagramas relacionais</p>
+            </div>
+
+            <!-- TABBED INTERFACE FOR ARCHITECTURE -->
+            <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+                <div class="flex border-b border-brand-border overflow-x-auto">
+                    <button onclick="switchTab('tab-poo')" id="btn-tab-poo" class="tab-btn active px-6 py-4 font-semibold text-sm transition flex items-center space-x-2 border-b-2 border-transparent whitespace-nowrap">
+                        <i class="fa-brands fa-python text-yellow-400"></i>
+                        <span>Classes POO (Python)</span>
+                    </button>
+                    <button onclick="switchTab('tab-uml')" id="btn-tab-uml" class="tab-btn px-6 py-4 font-semibold text-sm text-gray-400 hover:text-white transition flex items-center space-x-2 border-b-2 border-transparent whitespace-nowrap">
+                        <i class="fa-solid fa-sitemap text-brand-cyan"></i>
+                        <span>Diagrama UML de Classes</span>
+                    </button>
+                    <button onclick="switchTab('tab-er')" id="btn-tab-er" class="tab-btn px-6 py-4 font-semibold text-sm text-gray-400 hover:text-white transition flex items-center space-x-2 border-b-2 border-transparent whitespace-nowrap">
+                        <i class="fa-solid fa-database text-purple-400"></i>
+                        <span>Diagrama E-R (Banco de Dados)</span>
+                    </button>
+                </div>
+
+                <div class="p-6">
+                    <!-- POO TAB CONTENT -->
+                    <div id="tab-poo" class="tab-content space-y-4">
+                        <p class="text-xs text-gray-400">Exemplo da estrutura das classes base do projeto aplicando os pilares da POO (Encapsulamento, Herança e Polimorfismo):</p>
+                        <div class="relative rounded-xl overflow-hidden border border-brand-border bg-brand-dark p-4 font-mono text-xs text-gray-300 code-block">
+                            <button onclick="copyCode('code-poo')" class="absolute top-3 right-3 px-3 py-1 bg-brand-card border border-brand-border rounded-lg text-xs hover:bg-brand-border transition text-gray-300">
+                                <i class="fa-regular fa-copy mr-1"></i> Copiar
+                            </button>
+                            <pre id="code-poo"><code><span class="text-purple-400">from</span> abc <span class="text-purple-400">import</span> ABC, abstractmethod
+<span class="text-purple-400">import</span> datetime
+
+<span class="text-gray-500"># Abstração & Encapsulamento</span>
+<span class="text-blue-400">class</span> <span class="text-yellow-300">EntidadeBase</span>(ABC):
+    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self, id_entidade: <span class="text-cyan-400">int</span>):
+        self._id = id_entidade
+        self._criado_em = datetime.datetime.now()
+
+    <span class="text-purple-400">@property</span>
+    <span class="text-blue-400">def</span> <span class="text-green-400">id</span>(self):
+        <span class="text-purple-400">return</span> self._id
+
+    <span class="text-purple-400">@abstractmethod</span>
+    <span class="text-blue-400">def</span> <span class="text-green-400">exibir_detalhes</span>(self) -> <span class="text-cyan-400">str</span>:
+        <span class="text-purple-400">pass</span>
+
+<span class="text-gray-500"># Herança</span>
+<span class="text-blue-400">class</span> <span class="text-yellow-300">Usuario</span>(<span class="text-yellow-300">EntidadeBase</span>):
+    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self, id_entidade: <span class="text-cyan-400">int</span>, nome: <span class="text-cyan-400">str</span>, email: <span class="text-cyan-400">str</span>):
+        <span class="text-cyan-400">super</span>().__init__(id_entidade)
+        self.nome = nome
+        self.email = email
+        self.__senha_hash = <span class="text-emerald-300">""</span>
+
+    <span class="text-[#gray-500]"># Polimorfismo</span>
+    <span class="text-blue-400">def</span> <span class="text-green-400">exibir_detalhes</span>(self) -> <span class="text-cyan-400">str</span>:
+        <span class="text-purple-400">return</span> f<span class="text-emerald-300">"Usuário #{self._id}: {self.nome} ({self.email})"</span></code></pre>
+                        </div>
+                    </div>
+
+                    <!-- UML TAB CONTENT -->
+                    <div id="tab-uml" class="tab-content hidden space-y-4">
+                        <div class="p-6 bg-brand-dark rounded-xl border border-brand-border flex flex-col items-center justify-center min-h-[250px] text-center">
+                            <i class="fa-solid fa-diagram-project text-5xl text-brand-cyan mb-4"></i>
+                            <h4 class="text-white font-bold text-base mb-1">Diagrama UML de Classes</h4>
+                            <p class="text-gray-400 text-xs max-w-md">Estruturação visual com a relação entre EntidadeBase, Usuario, Servico e ModuloPersistencia.</p>
+                            <div class="mt-4 p-4 bg-brand-card rounded-lg border border-brand-border text-left font-mono text-xs text-gray-300 space-y-1">
+                                <div>[EntidadeBase &lt;&lt;Abstract&gt;&gt;] &lt;|-- [Usuario]</div>
+                                <div>[EntidadeBase &lt;&lt;Abstract&gt;&gt;] &lt;|-- [RecursoSistema]</div>
+                                <div>[Usuario] "1" *-- "N" [LogAcesso] : gera</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ER TAB CONTENT -->
+                    <div id="tab-er" class="tab-content hidden space-y-4">
+                        <div class="p-6 bg-brand-dark rounded-xl border border-brand-border flex flex-col items-center justify-center min-h-[250px] text-center">
+                            <i class="fa-solid fa-network-wired text-5xl text-purple-400 mb-4"></i>
+                            <h4 class="text-white font-bold text-base mb-1">Diagrama Entidade-Relacionamento (DER)</h4>
+                            <p class="text-gray-400 text-xs max-w-md">Esquema do banco de dados relacional provisionado no Linux (PostgreSQL/SQLite).</p>
+                            <div class="mt-4 p-4 bg-brand-card rounded-lg border border-brand-border text-left font-mono text-xs text-gray-300 space-y-1">
+                                <div>TABLE usuarios (id PK, nome VARCHAR, email VARCHAR, criado_em TIMESTAMP)</div>
+                                <div>TABLE logs_sistema (id PK, usuario_id FK, acao VARCHAR, data TIMESTAMP)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMMANDS & AUTOMATION SCRIPTS -->
+        <section id="scripts" class="space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white tracking-tight">Comandos & Scripts Linux (Infraestrutura)</h2>
+                <p class="text-gray-400 text-sm mt-1">Scripts prontos de deploy, systemd, firewall e rotinas de backup da Fase 4</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- Script 1: Systemd Service -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-gear text-brand-accent"></i>
+                            <h4 class="text-sm font-bold text-white">Serviço Systemd (`/etc/systemd/system/meuapp.service`)</h4>
+                        </div>
+                        <button onclick="copyCode('script-systemd')" class="px-2.5 py-1 bg-brand-dark border border-brand-border rounded text-xs hover:border-gray-500 transition text-gray-300">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="bg-brand-dark rounded-xl p-4 border border-brand-border font-mono text-xs text-gray-300 code-block overflow-x-auto">
+<pre id="script-systemd"><code>[Unit]
+Description=Aplicacao Python POO - Projeto Integrador
+After=network.target postgresql.service
+
+[Service]
+User=appuser
+Group=appgroup
+WorkingDirectory=/opt/meu_projeto
+ExecStart=/opt/meu_projeto/venv/bin/python main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+                    </div>
+                </div>
+
+                <!-- Script 2: Backup Shell Script -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-box-archive text-amber-400"></i>
+                            <h4 class="text-sm font-bold text-white">Script Shell de Backup (`backup.sh`)</h4>
+                        </div>
+                        <button onclick="copyCode('script-backup')" class="px-2.5 py-1 bg-brand-dark border border-brand-border rounded text-xs hover:border-gray-500 transition text-gray-300">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="bg-brand-dark rounded-xl p-4 border border-brand-border font-mono text-xs text-gray-300 code-block overflow-x-auto">
+<pre id="script-backup"><code>#!/bin/bash
+# Script de Automação de Backup do Banco e Aplicação
+DATA=$(date +%Y%m%d_%H%M%S)
+DESTINO="/var/backups/meuapp"
+ORIGEM="/opt/meu_projeto"
+
+mkdir -p $DESTINO
+tar -czf $DESTINO/backup_app_$DATA.tar.gz $ORIGEM
+echo "[$(date)] Backup concluído com sucesso." >> /var/log/meuapp_backup.log</code></pre>
+                    </div>
+                </div>
+
+                <!-- Script 3: Firewall UFW -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-shield-cat text-brand-cyan"></i>
+                            <h4 class="text-sm font-bold text-white">Configuração de Firewall (UFW)</h4>
+                        </div>
+                        <button onclick="copyCode('script-ufw')" class="px-2.5 py-1 bg-brand-dark border border-brand-border rounded text-xs hover:border-gray-500 transition text-gray-300">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="bg-brand-dark rounded-xl p-4 border border-brand-border font-mono text-xs text-gray-300 code-block overflow-x-auto">
+<pre id="script-ufw"><code># Ativar UFW e liberar apenas portas essenciais
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow 22/tcp comment 'SSH'
+sudo ufw allow 80/tcp comment 'HTTP Web'
+sudo ufw allow 443/tcp comment 'HTTPS Safe'
+sudo ufw enable
+sudo ufw status verbose</code></pre>
+                    </div>
+                </div>
+
+                <!-- Script 4: Failover & Fail2ban -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-server text-purple-400"></i>
+                            <h4 class="text-sm font-bold text-white">Verificação de Failover / Daemon Monitor</h4>
+                        </div>
+                        <button onclick="copyCode('script-failover')" class="px-2.5 py-1 bg-brand-dark border border-brand-border rounded text-xs hover:border-gray-500 transition text-gray-300">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="bg-brand-dark rounded-xl p-4 border border-brand-border font-mono text-xs text-gray-300 code-block overflow-x-auto">
+<pre id="script-failover"><code>#!/bin/bash
+# Monitora se a aplicação responde HTTP 200, caso contrário reinicia o serviço
+HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://localhost:8080/health)
+
+if [ $HTTP_STATUS -ne 200 ]; then
+    echo "[ALERT] Aplicação fora do ar! Reiniciando..." >> /var/log/failover.log
+    systemctl restart meuapp.service
+fi</code></pre>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- CENTRAL DE DOCUMENTAÇÕES -->
+        <section id="docs" class="space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white tracking-tight">Central de Documentações Técnicas</h2>
+                <p class="text-gray-400 text-sm mt-1">Acesse e visualize os relatórios de evolução acumulada (V1 a V4)</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Doc Card V1 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-6 flex flex-col justify-between hover:border-brand-blue/50 transition">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 bg-brand-blue/10 border border-brand-blue/30 text-brand-blue text-xs font-mono font-bold rounded-lg">Doc V1</span>
+                            <i class="fa-solid fa-file-pdf text-gray-500 text-lg"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-white">Planejamento Inicial</h4>
+                        <p class="text-xs text-gray-400">Contém levantamento de requisitos, prototipagem de UI e modelo de processos.</p>
+                    </div>
+                    <button onclick="alert('Visualizador de Documentação: V1 selecionada. Faça o download ou integre seu link do Google Drive/PDF aqui.')" class="mt-6 w-full py-2 bg-brand-dark border border-brand-border hover:bg-brand-border text-xs font-semibold rounded-xl text-gray-200 transition">
+                        Visualizar / Baixar
+                    </button>
+                </div>
+
+                <!-- Doc Card V2 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-6 flex flex-col justify-between hover:border-brand-cyan/50 transition">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-xs font-mono font-bold rounded-lg">Doc V2</span>
+                            <i class="fa-solid fa-file-code text-gray-500 text-lg"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-white">Desenvolvimento & POO</h4>
+                        <p class="text-xs text-gray-400">Atualização V1 + diagramas POO, repositório Git e testes de validação.</p>
+                    </div>
+                    <button onclick="alert('Visualizador de Documentação: V2 selecionada. Faça o download ou integre seu link do Google Drive/PDF aqui.')" class="mt-6 w-full py-2 bg-brand-dark border border-brand-border hover:bg-brand-border text-xs font-semibold rounded-xl text-gray-200 transition">
+                        Visualizar / Baixar
+                    </button>
+                </div>
+
+                <!-- Doc Card V3 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-6 flex flex-col justify-between hover:border-purple-500/50 transition">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-mono font-bold rounded-lg">Doc V3</span>
+                            <i class="fa-solid fa-file-lines text-gray-500 text-lg"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-white">Implantação & BD</h4>
+                        <p class="text-xs text-gray-400">Atualização V2 + diagrama ER, persistência de dados e servidor web.</p>
+                    </div>
+                    <button onclick="alert('Visualizador de Documentação: V3 selecionada. Faça o download ou integre seu link do Google Drive/PDF aqui.')" class="mt-6 w-full py-2 bg-brand-dark border border-brand-border hover:bg-brand-border text-xs font-semibold rounded-xl text-gray-200 transition">
+                        Visualizar / Baixar
+                    </button>
+                </div>
+
+                <!-- Doc Card V4 -->
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-6 flex flex-col justify-between hover:border-brand-accent/50 transition">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 bg-brand-accent/10 border border-brand-accent/30 text-brand-accent text-xs font-mono font-bold rounded-lg">Doc V4</span>
+                            <i class="fa-solid fa-file-contract text-gray-500 text-lg"></i>
+                        </div>
+                        <h4 class="text-base font-bold text-white">Infraestrutura Final</h4>
+                        <p class="text-xs text-gray-400">Atualização V3 + Linux, Systemd, backups, regras de segurança e failover.</p>
+                    </div>
+                    <button onclick="alert('Visualizador de Documentação: V4 selecionada. Faça o download ou integre seu link do Google Drive/PDF aqui.')" class="mt-6 w-full py-2 bg-brand-dark border border-brand-border hover:bg-brand-border text-xs font-semibold rounded-xl text-gray-200 transition">
+                        Visualizar / Baixar
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-brand-card border-t border-brand-border mt-16 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-code text-brand-accent"></i>
+                <span class="text-xs text-gray-400">Portal de Projetos Acadêmicos — Tecnologia & Ciência da Computação</span>
+            </div>
+            <div class="text-xs text-gray-500">
+                Desenvolvido com Python, Linux & POO
+            </div>
+        </div>
+    </footer>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 hidden bg-brand-accent text-black font-semibold px-4 py-2.5 rounded-xl shadow-lg text-xs items-center space-x-2 transition z-50">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-msg">Texto copiado!</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Progress Calculator Logic
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const totalTasks = checkboxes.length;
+            let completedTasks = 0;
+
+            // Phase tracking
+            const phaseCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+            const phaseTotals = { 1: 5, 2: 5, 3: 5, 4: 5, 5: 5 };
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    completedTasks++;
+                    const fase = cb.getAttribute('data-fase');
+                    if (fase) phaseCounts[fase]++;
+                }
+            });
+
+            const percent = Math.round((completedTasks / totalTasks) * 100);
+
+            // Update DOM Elements
+            document.getElementById('main-progress-bar').style.width = percent + '%';
+            document.getElementById('progress-percent-badge').innerText = percent + '%';
+            document.getElementById('global-status-text').innerText = `Status: ${percent}% Concluído`;
+            document.getElementById('completed-tasks-count').innerText = completedTasks;
+            document.getElementById('total-tasks-count').innerText = totalTasks;
+
+            // Update Phase Badges
+            for (let i = 1; i <= 5; i++) {
+                const badge = document.getElementById(`badge-fase-${i}`);
+                if (badge) {
+                    badge.innerText = `${phaseCounts[i]} / ${phaseTotals[i]} Concluídos`;
+                    if (phaseCounts[i] === phaseTotals[i]) {
+                        badge.className = "phase-badge text-xs font-mono px-3 py-1 rounded-full bg-brand-accent/20 border border-brand-accent/40 text-brand-accent font-bold";
+                    } else {
+                        badge.className = "phase-badge text-xs font-mono px-3 py-1 rounded-full bg-brand-dark border border-brand-border text-gray-300";
+                    }
+                }
+            }
+        }
+
+        // Tab Switcher Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.remove('hidden');
+            document.getElementById(`btn-${tabId}`).classList.add('active');
+        }
+
+        // Clipboard Copy Helper
+        function copyCode(elementId) {
+            const codeText = document.getElementById(elementId).innerText;
+            
+            // execCommand fallback for strict frames
+            const tempArea = document.createElement('textarea');
+            tempArea.value = codeText;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+
+            showToast("Código copiado para a área de transferência!");
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3000);
+        }
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Initialize progress state
+        window.onload = function() {
+            updateProgress();
+        };
+    </script>
+</body>
+</html>
